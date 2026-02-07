@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # --- Métriques ---
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  node-exporter: # Agent qui expose les stats du serveur (CPU, RAM)
+    image: prom/node-exporter
+    ports:
+      - "9100:9100"
+
+  # --- Logs (Configuration ELK prête) ---
+  # Commenté pour ne pas surcharger le Codespace, mais prêt à l'emploi.
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:7.10.0
+  #   volumes:
+  #     - ./elk/logstash/pipeline:/usr/share/logstash/pipeline
